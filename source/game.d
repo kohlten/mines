@@ -21,29 +21,37 @@ class Game
 	Texture failed;
 	Texture flag;
 	int cellSize = 32;
-	int mines = 70;
+	int mines = 100;
 	int clicked;
 	bool allow = true;
 	Random rng;
 
 	Cell[][] cells;
 
-	this(int x, int y, Color color, Random rng)
+	this(int x, int y, Color color, Random rng, int mines, int cellSize)
 	{
 		this.size.x = x;
 		this.size.y = y;
 		this.color = color;
 		this.window = new RenderWindow(VideoMode(this.size.x, this.size.y), "Mines");
 		this.window.setFramerateLimit(60);
+		this.cellSize = cellSize;
 		this.cells.length = this.size.y / this.cellSize;
-		foreach (i; 0 .. this.size.x / this.cellSize)
+		if (x > VideoMode.getDesktopMode().width || y > VideoMode.getDesktopMode().height)
+		{
+			writeln("Width or height is greater than your current display!");
+			exit(1);
+		} 
+		int height = VideoMode.getDesktopMode().height;
+		foreach (i; 0 .. this.size.y / this.cellSize)
 		{
 			this.cells[i].length = this.size.x / this.cellSize;
-			foreach (j; 0 .. this.size.y / this.cellSize)
+			foreach (j; 0 .. this.size.x / this.cellSize)
 				this.cells[i][j] = new Cell(Vector2f(i * this.cellSize, j * this.cellSize), this.cellSize);
 		}
 		this.loadTextures();
 		this.rng = rng;
+		this.mines = mines;
 	}
 
 	void run()
@@ -75,6 +83,8 @@ class Game
 				if (event.mouseButton.button == Mouse.Button.Right)
 					this.right(i, j);
 			}
+			if (event.type == Event.EventType.KeyPressed && !this.allow)
+				this.showAll(false);
 		}
 	}
 
@@ -175,11 +185,11 @@ class Game
 			return null;
 	}
 
-	void showAll()
+	void showAll(bool show)
 	{
 		foreach (line; this.cells)
 			foreach (cell; line)
-				cell.shown = true;
+				cell.shown = show;
 	}
 
 	int countRight()
@@ -215,7 +225,7 @@ class Game
 		{
 			writeln("Done!");
 			this.allow = false;
-			this.showAll();
+			this.showAll(true);
 		}
 	}
 
@@ -230,12 +240,13 @@ class Game
 			this.countAllNeighbors();
 		}
 		if (this.cells[i][j].numNeighbors == 0)
-			this.findBlanks(this.cells[i][j]);
+			foreach(k; 0 .. 2)
+				this.findBlanks(this.cells[i][j]);
 		if (this.cells[i][j].mine)
 		{
 			this.allow = false;
 			this.cells[i][j].exploded = true;
-			this.showAll();
+			this.showAll(true);
 		}
 	}
 }
