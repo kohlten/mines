@@ -25,7 +25,7 @@ class Cell
 
 	void draw(RenderWindow window, Texture[] board, Texture blank, Texture mine, Texture exploded, Texture flag)
 	{
-		if (shown)
+		if (this.shown)
 		{
 			if (this.exploded)
 				this.current.setTexture(exploded);
@@ -44,16 +44,6 @@ class Cell
 		window.draw(this.current);
 	}
 
-	void show()
-	{
-		this.shown = true;
-	}
-
-	bool isShown()
-	{
-		return this.shown;
-	}
-
 	int countNeighbors(Cell[][] cells)
 	{
 		Vector2i curr = Vector2i(cast(int) this.pos.x / this.size, cast(int) this.pos.y / this.size);
@@ -64,5 +54,20 @@ class Cell
 					if (cells[i][j] != this && cells[i][j].mine)
 						count++;
 		return count;
+	}
+
+	void show(bool newBool)
+	{
+		this.shown = newBool;
+	}
+
+	bool isShown()
+	{
+		return this.shown;
+	}
+
+	int getNeighbors()
+	{
+		return this.numNeighbors;
 	}
 }
