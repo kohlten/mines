@@ -92,7 +92,7 @@ class Game
 	{
 		import std.algorithm : canFind;
 
-		Vector2i[] badPlaces = this.findSpotsAround!Vector2i(current);
+		Vector2i[] badPlaces = this.findSpotsAround!Vector2i(current, true);
 		Vector2i pos;
 
 		foreach (i; 0 .. this.mines)
@@ -107,7 +107,7 @@ class Game
 	void loadTextures()
 	{
 		bool success = true;
-		foreach (i; 0 .. 8)
+		foreach (i; 0 .. 9)
 		{
 			Texture tmp = new Texture();
 			if (!tmp.loadFromFile("sprites/" ~ to!string(i) ~ "board.png"))
@@ -142,14 +142,14 @@ class Game
 		Stack!Cell arr = new Stack!Cell();
 		if (current.numNeighbors > 0)
 		{
-			current.shown = true;
+			current.show();
 			return;
 		}
 		arr.push(current);
 		Cell next = this.getNext(current);
 		while (arr.getLen() > 0)
 		{
-			current.shown = true;
+			current.show();
 			next = this.getNext(current);
 			if (next)
 			{
@@ -168,7 +168,7 @@ class Game
 
 		if (current.numNeighbors > 0)
 		{
-			current.shown = true;
+			current.show();
 			return null;
 		}
 		foreach (i; 0 .. pos.length)
@@ -189,7 +189,7 @@ class Game
 	{
 		foreach (line; this.cells)
 			foreach (cell; line)
-				cell.shown = show;
+				cell.show();
 	}
 
 	int countRight()
@@ -203,13 +203,20 @@ class Game
 		return count;
 	}
 
-	T[] findSpotsAround(T)(Cell current)
+	T[] findSpotsAround(T)(Cell current, bool addCurrent = false)
 	{
-		T curr = Vector2i(cast(int) current.pos.x / this.cellSize,
+		T curr = T(cast(int) current.pos.x / this.cellSize,
 			cast(int) current.pos.y / this.cellSize);
-		T[] places = [Vector2i(curr.x + 1, curr.y),		Vector2i(curr.x, curr.y + 1),	  Vector2i(curr.x - 1, curr.y), 	Vector2i(curr.x, curr.y - 1),
-					  Vector2i(curr.x + 1, curr.y + 1), Vector2i(curr.x - 1, curr.y - 1), Vector2i(curr.x - 1, curr.y + 1), Vector2i(curr.x + 1, curr.y + 1)];
-		return places;
+		T[] places;
+
+		foreach (i; curr.x - 1 .. curr.x + 2)
+			foreach (j; curr.y - 1 .. curr.y + 2)
+				if (!(i == curr.x && j == curr.y))
+					places ~= T(i, j);
+		if (!addCurrent)
+			return places;
+		else
+			return places ~ curr;
 	}
 
 	void right(int i, int j)
@@ -232,7 +239,7 @@ class Game
 	void left(int i, int j)
 	{
 		if (!this.cells[i][j].shown)
-			this.cells[i][j].shown = true;
+			this.cells[i][j].show();
 		if (!this.clicked)
 		{
 			this.clicked = true;
@@ -244,6 +251,7 @@ class Game
 				this.findBlanks(this.cells[i][j]);
 		if (this.cells[i][j].mine)
 		{
+			writeln("Correct: ", countRight());
 			this.allow = false;
 			this.cells[i][j].exploded = true;
 			this.showAll(true);

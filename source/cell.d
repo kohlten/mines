@@ -7,7 +7,7 @@ class Cell
 	Vector2f pos;
 	bool shown;
 	int numNeighbors;
-	Sprite current;
+	RectangleShape current;
 	bool mine;
 	bool exploded;
 	bool flagged;
@@ -16,9 +16,10 @@ class Cell
 	this(Vector2f pos, int size)
 	{
 		this.pos = pos;
-		this.current = new Sprite();
+		this.current = new RectangleShape();
 		this.current.position(this.pos);
-		this.current.scale(Vector2f(size / 16, size / 16));
+		this.current.fillColor(Color(255, 255, 255));
+		this.current.size = Vector2f(size, size);
 		this.size = size;
 	}
 
