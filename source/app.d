@@ -4,7 +4,6 @@ import dsfml.graphics;
 
 import game;
 
-import std.random : Random, unpredictableSeed;
 import std.stdio : writeln;
 import std.conv : to;
 
@@ -15,7 +14,6 @@ void main(string[] argv)
 		writeln("Invalid usage!\n./bin/mines SIZE MINES CELLSIZE");
 		return;
 	}
-	Random rng = Random(unpredictableSeed);
 	int size = to!int(argv[1]);
 	int mines = to!int(argv[2]);
 	int cellSize = to!int(argv[3]);
@@ -29,6 +27,6 @@ void main(string[] argv)
 		writeln("Mines cannot be greater than all the spots!");
 		return;
 	}
-	auto game = new Game(size, size, Color(255, 255, 255), rng, mines, cellSize);
+	auto game = new Game(size, size, mines, cellSize);
 	game.run();
 }

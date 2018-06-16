@@ -3,54 +3,59 @@ import dsfml.window;
 import dsfml.system;
 
 import std.conv : to;
-import std.random : Random, unpredictableSeed, uniform;
+import std.random : uniform;
 import std.stdio : writeln;
-import core.stdc.stdlib : exit;
 
 import cell;
 
 class Game
 {
+	// Window values
 	RenderWindow window;
 	Vector2i size;
 	Color color;
-	ContextSettings settings;
+
+	// Textures
 	Texture[] board;
 	Texture blank;
 	Texture bomb;
 	Texture failed;
 	Texture flag;
+
+	// Cells
 	int cellSize = 32;
 	int mines = 100;
-	int clicked;
-	bool allow = true;
-	Random rng;
 
+	// First click
+	bool clicked;
+
+	// Deny clicking
+	bool allow = true;
+
+	// Cells to hold the mines or nothing
 	Cell[][] cells;
 
-	this(int x, int y, Color color, Random rng, int mines, int cellSize)
+	this(int x, int y, int mines, int cellSize)
 	{
-		this.size.x = x;
-		this.size.y = y;
-		this.color = color;
+		this.size = Vector2f(x, y);
+		this.color = Color(255, 255, 255);
 		this.window = new RenderWindow(VideoMode(this.size.x, this.size.y), "Mines");
 		this.window.setFramerateLimit(60);
+
 		this.cellSize = cellSize;
 		this.cells.length = this.size.y / this.cellSize;
+
 		if (x > VideoMode.getDesktopMode().width || y > VideoMode.getDesktopMode().height)
-		{
-			writeln("Width or height is greater than your current display!");
-			exit(1);
-		} 
-		int height = VideoMode.getDesktopMode().height;
+			assert(0, "Width or height is greater than your current display!");
+
 		foreach (i; 0 .. this.size.y / this.cellSize)
 		{
 			this.cells[i].length = this.size.x / this.cellSize;
 			foreach (j; 0 .. this.size.x / this.cellSize)
 				this.cells[i][j] = new Cell(Vector2f(i * this.cellSize, j * this.cellSize), this.cellSize);
 		}
+
 		this.loadTextures();
-		this.rng = rng;
 		this.mines = mines;
 	}
 
@@ -98,7 +103,7 @@ class Game
 		foreach (i; 0 .. this.mines)
 		{
 			do
-				pos = Vector2i(uniform(0, this.size.x / this.cellSize, this.rng), uniform(0, this.size.y / this.cellSize, this.rng));
+				pos = Vector2i(uniform(0, this.size.x / this.cellSize), uniform(0, this.size.y / this.cellSize));
 			while (badPlaces.canFind(pos) || this.cells[pos.x][pos.y].mine);
 			this.cells[pos.x][pos.y].mine = true;
 		}
@@ -121,11 +126,7 @@ class Game
 		if (!this.failed.loadFromFile("sprites/bomb_red.png") || !this.blank.loadFromFile("sprites/blank.png") ||
 			!this.bomb.loadFromFile("sprites/bomb.png") || !this.flag.loadFromFile("sprites/flag.png"))
 				success = false;
-		if (!success)
-		{
-			writeln("Failed to load textures!");
-			exit(1);
-		}
+		assert(success, "Failed to load Textures!");
 	}
 
 	void countAllNeighbors()
@@ -174,13 +175,14 @@ class Game
 		foreach (i; 0 .. pos.length)
 			if (pos[i].x >= 0 && pos[i].x < cells.length && pos[i].y >= 0 && pos[i].y < cells.length)
 			{
-				if (!this.cells[pos[i].x][pos[i].y].mine && !this.cells[pos[i].x][pos[i].y].shown && !this.cells[pos[i].x][pos[i].y].numNeighbors)
+				if (!this.cells[pos[i].x][pos[i].y].mine && !this.cells[pos[i].x][pos[i].y].isShown()
+					&& !this.cells[pos[i].x][pos[i].y].numNeighbors)
 					nextOnes ~= this.cells[pos[i].x][pos[i].y];
 				else if (this.cells[pos[i].x][pos[i].y].numNeighbors > 0)
 					this.cells[pos[i].x][pos[i].y].show();
 			}
 		if (nextOnes.length > 0)
-			return (nextOnes[uniform(0, nextOnes.length, this.rng)]);
+			return (nextOnes[uniform(0, nextOnes.length)]);
 		else
 			return null;
 	}
@@ -221,7 +223,7 @@ class Game
 
 	void right(int i, int j)
 	{
-		if (!this.cells[i][j].shown)
+		if (!this.cells[i][j].isShown())
 		{
 			if (this.cells[i][j].flagged)
 				this.cells[i][j].flagged = false;
@@ -238,7 +240,7 @@ class Game
 
 	void left(int i, int j)
 	{
-		if (!this.cells[i][j].shown)
+		if (!this.cells[i][j].isShown())
 			this.cells[i][j].show();
 		if (!this.clicked)
 		{

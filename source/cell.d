@@ -49,6 +49,11 @@ class Cell
 		this.shown = true;
 	}
 
+	bool isShown()
+	{
+		return this.shown;
+	}
+
 	int countNeighbors(Cell[][] cells)
 	{
 		Vector2i curr = Vector2i(cast(int) this.pos.x / this.size, cast(int) this.pos.y / this.size);
