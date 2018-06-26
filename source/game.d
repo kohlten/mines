@@ -162,7 +162,7 @@ private:
 			this.allow = false;
 			showAll(this.cells, true);
 			this.draw();
-			this.startSubmenu("You have won\n.    Continue?");
+			this.startSubmenu("You have won!");
 		}
 	}
 
@@ -185,7 +185,7 @@ private:
 			this.cells[i][j].exploded = true;
 			showAll(this.cells, true);
 			this.draw();
-			this.startSubmenu("You have lost!\n     Continue?");
+			this.startSubmenu("You have lost!");
 		}
 	}
 

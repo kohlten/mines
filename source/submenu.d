@@ -13,6 +13,7 @@ class SubMenu
 	Button noButton;
 
 	Text text;
+	Text continueText;
 
 	Texture buttonTex;
 	Font font;
@@ -22,12 +23,13 @@ class SubMenu
 
 	this(string text)
 	{
-		this.size = Vector2i(210, 210);
+		this.size = Vector2i(200, 200);
 		this.window = new RenderWindow(VideoMode(size.x, size.y), "Mines");
+		this.window.setVerticalSyncEnabled(true);
 		this.loadImages();
 		this.loadFonts();
-		this.yesButton = new Button(this.window, Vector2f(this.size.x / 3, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "Yes");
-		this.noButton = new Button(this.window, Vector2f((this.size.x / 3) * 2, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "No");
+		this.yesButton = new Button(this.window, Vector2f(this.size.x / 3, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "Yes", 25);
+		this.noButton = new Button(this.window, Vector2f((this.size.x / 3) * 2, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "No", 25);
 		this.setUpText(this.font, text);
 		
 	}
@@ -54,6 +56,7 @@ private:
 		this.yesButton.draw();
 		this.noButton.draw();
 		this.window.draw(this.text);
+		this.window.draw(this.continueText);
 		this.window.display();
 	}
 
@@ -109,12 +112,21 @@ private:
 	void setUpText(Font font, string text)
 	{
 		this.text = new Text();
+		this.continueText = new Text();
+		this.continueText.setColor = Color(0, 0, 0);
+		this.continueText.setFont(font);
+		this.continueText.setCharacterSize(25);
+		this.continueText.setString("Continue?");
+
 		this.text.setColor = Color(0, 0, 0);
 		this.text.setFont(font);
-		this.text.setCharacterSize(30);
+		this.text.setCharacterSize(25);
 		this.text.setString(text);
 
-		FloatRect textSize = this.text.getLocalBounds();
+		FloatRect textSize = this.continueText.getLocalBounds();
+		this.continueText.origin = Vector2f(textSize.width / 2, textSize.height / 2);
+		this.continueText.position = Vector2f(this.size.x / 2, 80);
+		textSize = this.text.getLocalBounds();
 		this.text.origin = Vector2f(textSize.width / 2, textSize.height / 2);
 		this.text.position = Vector2f(this.size.x / 2, 60);
 	}
