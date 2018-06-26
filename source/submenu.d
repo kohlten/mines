@@ -22,13 +22,14 @@ class SubMenu
 
 	this(string text)
 	{
-		this.size = Vector2i(100, 100);
-		this.window = new RenderWindow(VideoMode(size.x, size.y), "Mines", RenderWindow.Style.None);
+		this.size = Vector2i(210, 210);
+		this.window = new RenderWindow(VideoMode(size.x, size.y), "Mines");
 		this.loadImages();
 		this.loadFonts();
-		this.yesButton = new Button(this.window, Vector2f(25, 75), Vector2f(25, 25), this.buttonTex, this.font, "Yes");
-		this.noButton = new Button(this.window, Vector2f(25, 75), Vector2f(25, 25), this.buttonTex, this.font, "No");
+		this.yesButton = new Button(this.window, Vector2f(this.size.x / 3, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "Yes");
+		this.noButton = new Button(this.window, Vector2f((this.size.x / 3) * 2, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "No");
 		this.setUpText(this.font, text);
+		
 	}
 
 	void run()
@@ -50,8 +51,9 @@ private:
 	void draw()
 	{
 		this.window.clear(Color(200, 200, 200));
-		this.window.draw(this.yesButton);
-		this.window.draw(this.noButton);
+		this.yesButton.draw();
+		this.noButton.draw();
+		this.window.draw(this.text);
 		this.window.display();
 	}
 
@@ -67,6 +69,11 @@ private:
 		{
 			switch (event.type)
 			{
+				case Event.EventType.Closed:
+					this.window.close();
+					this.done = true;
+					this.running = false;
+					break;
 				case Event.EventType.MouseButtonPressed:
 					if (this.yesButton.isPressed())
 					{
@@ -104,11 +111,11 @@ private:
 		this.text = new Text();
 		this.text.setColor = Color(0, 0, 0);
 		this.text.setFont(font);
+		this.text.setCharacterSize(30);
 		this.text.setString(text);
 
 		FloatRect textSize = this.text.getLocalBounds();
-		writeln(textSize);
 		this.text.origin = Vector2f(textSize.width / 2, textSize.height / 2);
-		this.text.position = Vector2f(this.size.x / 2, 50);
+		this.text.position = Vector2f(this.size.x / 2, 60);
 	}
 }

@@ -19,13 +19,13 @@ private:
 	RectangleShape button;
 
 public:
-	this(RenderWindow window, Vector2f pos, Vector2f size, Texture buttonTex, Font font, string text)
+	this(RenderWindow window, Vector2f pos, Vector2f size, Texture buttonTex, Font font, string text, uint textSize = 30)
 	{
 		this.pos = pos;
 		this.size = size;
 		this.window = window;
 		this.buttonTex = buttonTex;	
-		this.setUpText(font, text);
+		this.setUpText(font, text, textSize);
 		this.setUpButton();
 	}
 
@@ -58,16 +58,17 @@ public:
 		return false;
 	}
 private:
-	void setUpText(Font font, string text)
+	void setUpText(Font font, string text, uint textSize)
 	{
 		this.text = new Text();
 		this.text.setColor = Color(0, 0, 0);
 		this.text.setFont(font);
+		this.text.setCharacterSize(textSize);
 		this.text.setString(text);
 
-		FloatRect textSize = this.text.getLocalBounds();
+		FloatRect textRect = this.text.getLocalBounds();
 		writeln(textSize);
-		this.text.origin = Vector2f(textSize.width / 2, textSize.height / 2);
+		this.text.origin = Vector2f(textRect.width / 2, textRect.height / 2);
 		this.text.position = this.pos;
 	}
 

@@ -34,6 +34,10 @@ private:
 	// Deny clicking
 	bool allow = true;
 
+	// Exit game
+	bool running = true;
+	bool done = false;
+
 	// Cells to hold the mines or nothing
 	Cell[][] cells;
 
@@ -74,17 +78,14 @@ public:
 		this.mines = mines;
 	}
 
-	void run()
+	bool run()
 	{
-		while (this.window.isOpen())
+		while (this.window.isOpen() && this.running)
 		{
 			this.getEvents();
-			this.window.clear(this.color);
-			foreach (i; 0 .. this.size.x / this.cellSize)
-				foreach (j; 0 .. this.size.y / this.cellSize)
-					this.cells[i][j].draw(this.window, this.board, this.blank, this.bomb, this.failed, this.flag);
-			this.window.display();
+			this.draw();
 		}
+		return done;
 	}
 
 private:
@@ -123,6 +124,15 @@ private:
 		}
 	}
 
+	void draw()
+	{
+		this.window.clear(this.color);
+		foreach (i; 0 .. this.size.x / this.cellSize)
+			foreach (j; 0 .. this.size.y / this.cellSize)
+				this.cells[i][j].draw(this.window, this.board, this.blank, this.bomb, this.failed, this.flag);
+		this.window.display();
+	}
+
 	void loadTextures()
 	{
 		bool success = true;
@@ -149,9 +159,10 @@ private:
 				this.cells[i][j].flagged = !this.cells[i][j].flagged;
 		if (countRight(this.cells) == this.mines)
 		{
-			writeln("Done!");
 			this.allow = false;
 			showAll(this.cells, true);
+			this.draw();
+			this.startSubmenu("You have won\n.    Continue?");
 		}
 	}
 
@@ -170,10 +181,21 @@ private:
 				findBlanks(this.cells[i][j], this.cells, this.cellSize);
 		if (this.cells[i][j].mine)
 		{
-			writeln("Correct: ", countRight(this.cells));
 			this.allow = false;
 			this.cells[i][j].exploded = true;
 			showAll(this.cells, true);
+			this.draw();
+			this.startSubmenu("You have lost!\n     Continue?");
 		}
+	}
+
+	void startSubmenu(string text)
+	{
+		SubMenu submenu = new SubMenu(text);
+		submenu.run();
+		this.done = submenu.getDone();
+		if (this.done)
+			this.window.close();
+		this.running = false;
 	}
 }
