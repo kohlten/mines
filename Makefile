@@ -22,4 +22,4 @@ fclean: clean
 
 re: clean $(OUT)
 
-.PHONY: clean fclean
+.PHONY: clean fclean DSFMLC

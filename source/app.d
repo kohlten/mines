@@ -7,26 +7,25 @@ import game;
 import std.stdio : writeln;
 import std.conv : to;
 
-void main(string[] argv)
+enum
 {
-	if (argv.length != 4)
-	{
-		writeln("Invalid usage!\n./bin/mines SIZE MINES CELLSIZE");
-		return;
-	}
-	int size = to!int(argv[1]);
-	int mines = to!int(argv[2]);
-	int cellSize = to!int(argv[3]);
-	if (size % cellSize != 0)
-	{
-		writeln("Size must be a multiple of cell size!");
-		return;
-	}
-	if (mines >= (size * size) / 2)
-	{
-		writeln("Mines cannot be greater than all the spots!");
-		return;
-	}
-	auto game = new Game(size, size, mines, cellSize);
+	MENU = 1 << 10,
+	GAME = 1 << 11
+}
+
+enum
+{
+	EASY = 0,
+	MEDIUM = 1,
+	HARD = 2
+}
+
+void main()
+{
+	writeln(MENU, " ", GAME, " E: ", EASY, " M: ", MEDIUM, " H:", HARD);
+	Vector2i size = Vector2i(500, 500);
+	RenderWindow window = new RenderWindow(VideoMode(size.x, size.y), "Mines");
+	int mode = 1;
+	auto game = new Game(window, mode, size);
 	game.run();
 }

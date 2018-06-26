@@ -24,8 +24,8 @@ class Game
 	Texture flag;
 
 	// Cells
-	int cellSize = 32;
-	int mines = 100;
+	int cellSize;
+	int mines;
 
 	// First click
 	bool clicked;
@@ -36,18 +36,30 @@ class Game
 	// Cells to hold the mines or nothing
 	Cell[][] cells;
 
-	this(int x, int y, int mines, int cellSize)
+	this(RenderWindow window, int mode, Vector2i size)
 	{
-		this.size = Vector2f(x, y);
+		this.size = size;
 		this.color = Color(255, 255, 255);
-		this.window = new RenderWindow(VideoMode(this.size.x, this.size.y), "Mines");
+		if (mode == 0)
+		{
+            this.mines = 10;
+            this.cellSize = this.size.x / 9; // 9 * 9
+        }
+        if (mode == 1)
+        {
+            this.mines = 40;
+            this.cellSize = this.size.x / 16; // 16 * 16
+        }
+        if (mode == 2)
+		{
+            this.mines = 99;
+            this.cellSize = this.size.x / 24; // 24 * 24
+        }
+		this.window = window;
 		this.window.setFramerateLimit(60);
 
 		this.cellSize = cellSize;
 		this.cells.length = this.size.y / this.cellSize;
-
-		if (x > VideoMode.getDesktopMode().width || y > VideoMode.getDesktopMode().height)
-			assert(0, "Width or height is greater than your current display!");
 
 		foreach (i; 0 .. this.size.y / this.cellSize)
 		{
