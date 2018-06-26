@@ -1,5 +1,4 @@
 import dsfml.graphics;
-import dsfml.window;
 import dsfml.system;
 
 import std.conv : to;
@@ -8,9 +7,11 @@ import std.stdio : writeln;
 
 import cell;
 import algorithms;
+import submenu;
 
 class Game
 {
+private:
 	// Window values
 	RenderWindow window;
 	Vector2i size;
@@ -36,10 +37,11 @@ class Game
 	// Cells to hold the mines or nothing
 	Cell[][] cells;
 
+public:
 	this(RenderWindow window, int mode, Vector2i size)
 	{
 		this.size = size;
-		this.color = Color(255, 255, 255);
+		this.color = Color(120, 120, 120);
 		if (mode == 0)
 		{
             this.mines = 10;
@@ -85,6 +87,7 @@ class Game
 		}
 	}
 
+private:
 	void getEvents()
 	{
 		Event event;
@@ -101,8 +104,6 @@ class Game
 				if (event.mouseButton.button == Mouse.Button.Right)
 					this.right(i, j);
 			}
-			if (event.type == Event.EventType.KeyPressed && !this.allow)
-				showAll(this.cells, false);
 		}
 	}
 
