@@ -14,10 +14,12 @@ int MODE;
 
 void main()
 {
-	writeln(MENU, " ", GAME, " E: ", EASY, " M: ", MEDIUM, " H:", HARD);
 	Vector2i size = Vector2i(500, 500);
+	VideoMode mode = VideoMode(size.x, size.y);
+	Vector2i monitorSize = Vector2i(mode.getDesktopMode().width, mode.getDesktopMode().height);
 	RenderWindow window = new RenderWindow(VideoMode(size.x, size.y), "Mines", RenderWindow.Style.Titlebar | RenderWindow.Style.Close);
-
+	window.position(Vector2i(monitorSize.x / 2 - size.x / 2, monitorSize.y / 2 - size.y / 2));
+	window.setVerticalSyncEnabled(true);
 	while (window.isOpen())
 	{
 		if (STATE == MENU)

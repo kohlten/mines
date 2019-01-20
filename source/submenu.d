@@ -23,9 +23,14 @@ class SubMenu
 
 	this(string text)
 	{
+		VideoMode mode;
+		Vector2i monitorSize = Vector2i(mode.getDesktopMode().width, mode.getDesktopMode().height);
+		
 		this.size = Vector2i(200, 200);
+		mode = VideoMode(size.x, size.y);
 		this.window = new RenderWindow(VideoMode(size.x, size.y), "Mines");
 		this.window.setVerticalSyncEnabled(true);
+		this.window.position(Vector2i(monitorSize.x / 2 - mode.width / 2, monitorSize.y / 2 - mode.height / 2));
 		this.loadImages();
 		this.loadFonts();
 		this.yesButton = new Button(this.window, Vector2f(this.size.x / 3, (this.size.y / 4) * 3), Vector2f(50, 50), this.buttonTex, this.font, "Yes", 25);

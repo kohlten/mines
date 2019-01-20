@@ -53,12 +53,12 @@ public:
         }
         if (mode == 1)
         {
-            this.mines = 40;
+            this.mines = 35;
             this.cellSize = this.size.x / 16; // 16 * 16
         }
         if (mode == 2)
 		{
-            this.mines = 99;
+            this.mines = 85;
             this.cellSize = this.size.x / 24; // 24 * 24
         }
 		this.window = window;
